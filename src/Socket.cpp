@@ -30,8 +30,6 @@ int Socket::accept(InetAddress* peeraddr) {
     int connfd = ::accept4(sockfd_, (sockaddr *)&addr, &addrlen, SOCK_NONBLOCK | SOCK_CLOEXEC); // 设置非阻塞和关闭时释放资源
     if (connfd >= 0) {
         peeraddr->setSockAddr(addr);
-    } else {
-        LOG_ERROR("Socket::accept sockfd_=%d failed", sockfd_);
     }
 
     return connfd;

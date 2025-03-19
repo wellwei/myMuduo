@@ -169,7 +169,10 @@ void TcpConnection::handleWrite() {
                 }
             }
         } else {
-            LOG_ERROR("TcpConnection::handleWrite\n");
+            errno = savedErrno;
+            if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                LOG_ERROR("TcpConnection::handleWrite\n");
+            }
         }
     } else {
         LOG_ERROR("Connection fd = %d is down, no more writing\n", channel_->fd());

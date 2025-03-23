@@ -1,44 +1,75 @@
-#include <iostream>
-#include <string>
+#include <memory>
 
 #include "Logger.h"
+#include "LogStream.h"
+#include "AsyncLogger.h"
 #include "TimeStamp.h"
+#include <stdarg.h>
 
 namespace muduo {
 
-Logger& Logger::getInstance() {
-    static Logger logger;
-    return logger;
+#ifndef MUDEBUG
+Logger::LogLevel g_logLevel = Logger::LogLevel::INFO;
+#else
+Logger::LogLevel g_logLevel = Logger::LogLevel::DEBUG;
+#endif
+
+AsyncLogger* Logger::asyncLogger_ = nullptr;
+
+Logger::Logger(SourceFile file, int line, LogLevel level) 
+    : stream_(new LogStream),
+        file_(file),
+        line_(line),
+        level_(level) {
+            std::string time = TimeStamp::now().toString();
+            *stream_ << time << " [" << levelToString(level) << "] " << file_.data_ << ":" << line << " ";
 }
 
-void Logger::setLogLevel(int level) {
-    logLevel_ = level;
+Logger::Logger(SourceFile file, int line, LogLevel level, const char* fmt, ...) 
+    : stream_(new LogStream),
+        file_(file),
+        line_(line),
+        level_(level) {
+            std::string time = TimeStamp::now().toString();
+            *stream_ << time << " [" << levelToString(level) << "] " << file_.data_ << ":" << line << " ";
+            
+            va_list args;
+            va_start(args, fmt);
+            char buf[1024];
+            vsnprintf(buf, sizeof(buf), fmt, args);
+            va_end(args);
+            *stream_ << buf;
 }
 
-// 写日志 [级别信息] time : msg
-void Logger::log(std::string msg)
-{
-    std::string pre = "";
-    switch (logLevel_)
-    {
-    case INFO:
-        pre = "[INFO]";
-        break;
-    case ERROR:
-        pre = "[ERROR]";
-        break;
-    case FATAL:
-        pre = "[FATAL]";
-        break;
-    case DEBUG:
-        pre = "[DEBUG]";
-        break;
-    default:
-        break;
+Logger::~Logger() {
+    *stream_ << "\n";
+    const LogStream::Buffer& buf(stream_->buffer());
+    if (asyncLogger_) {
+        asyncLogger_->append(buf.data(), buf.length());
     }
+}
 
-    // 打印时间和msg
-    std::cout << pre + TimeStamp::now().toString() << " : " << msg << std::endl;
+LogStream& Logger::stream() {
+    return *stream_;
+}
+
+void Logger::setLogLevel(LogLevel level) {
+    g_logLevel = level;
+}
+
+std::string Logger::levelToString(LogLevel level) {
+    switch (level) {
+        case Logger::LogLevel::INFO:
+            return "INFO";
+        case Logger::LogLevel::ERROR:
+            return "ERROR";
+        case Logger::LogLevel::FATAL:
+            return "FATAL";
+        case Logger::LogLevel::DEBUG:
+            return "DEBUG";
+        default:
+            return "UNKNOWN";
+    }
 }
 
 }

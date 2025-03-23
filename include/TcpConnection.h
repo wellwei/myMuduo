@@ -10,7 +10,7 @@
 #include "nocopyable.h"
 #include "EventLoop.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class TcpConnection : nocopyable, public std::enable_shared_from_this<TcpConnection> {
 public:

@@ -9,7 +9,7 @@
 
 #include "nocopyable.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class Thread : nocopyable {
 

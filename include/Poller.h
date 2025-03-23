@@ -6,7 +6,7 @@
 #include "nocopyable.h"
 #include "TimeStamp.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class Channel;
 class EventLoop;

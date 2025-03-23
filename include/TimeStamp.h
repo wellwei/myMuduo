@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-inline namespace muduo {
+namespace muduo {
 
 class TimeStamp {
 public:

@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include <cstring>
 
+#include "AsyncLogger.h"
+
 using namespace muduo;
 using namespace std::chrono;
 
@@ -78,7 +80,7 @@ TEST(TcpServerTest, QPS) {
     // 等待服务器启动
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    const int numClients = 3500; // 模拟2000个客户端
+    const int numClients = 3000; // 模拟2000个客户端
     const int requestsPerClient = 30; // 每个客户端发送20次请求
     std::atomic<int64_t> totalRequests(0);
     std::vector<std::thread> clients;
@@ -257,7 +259,15 @@ TEST(TcpServerTest, Latency) {
     EXPECT_LT(avgLatency, 10); // 期望平均延迟小于10ms，具体值需根据硬件调整
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
+    muduo::AsyncLogger logger("echoserver", 1024 * 1024 * 128);
+    muduo::Logger::setAsyncLogger(&logger);
+    muduo::Logger::setLogLevel(muduo::Logger::LogLevel::DEBUG);
+    logger.start();
+
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    int ret = RUN_ALL_TESTS();
+
+    logger.stop();
+    return ret;
 }

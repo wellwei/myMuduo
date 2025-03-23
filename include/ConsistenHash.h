@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-inline namespace muduo {
+namespace muduo {
 
 /**
  * @class ConsistentHash

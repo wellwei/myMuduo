@@ -1,5 +1,6 @@
 #include "TcpServer.h"
 #include "Logger.h"
+#include "AsyncLogger.h"
 #include "TimeStamp.h"
 
 using namespace muduo;
@@ -37,10 +38,16 @@ private:
 };
 
 int main() {
+    AsyncLogger logger("echoserver", 1024 * 1024 * 100, 10);
+    Logger::setAsyncLogger(&logger);
+    logger.start();
+
     EventLoop loop;
     InetAddress listenAddr(8080);
     EchoServer server(&loop, listenAddr, "EchoServer");
     server.start();
     loop.loop();
+
+    logger.stop();
     return 0;
 }

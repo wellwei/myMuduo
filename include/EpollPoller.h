@@ -6,7 +6,7 @@
 #include "TimeStamp.h"
 #include "Poller.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class EpollPoller : public Poller {
 

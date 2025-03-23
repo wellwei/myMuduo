@@ -3,7 +3,7 @@
 #include "nocopyable.h"
 #include "InetAddress.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class Socket : nocopyable {
 public:

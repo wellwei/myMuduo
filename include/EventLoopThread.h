@@ -8,7 +8,7 @@
 #include "Thread.h"
 #include "EventLoop.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class EventLoopThread : nocopyable {
 

@@ -10,7 +10,7 @@
 #include "InetAddress.h"
 #include "nocopyable.h"
 
-inline namespace muduo {
+namespace muduo {
 
 // Acceptor类，用于监听端口，接受新的连接，并将新的连接交给用户指定的回调函数处理
 // Acceptor类不负责处理新的连接，只负责接受新的连接，并将新的连接交给用户指定的回调函数处理

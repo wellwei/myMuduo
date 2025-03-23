@@ -7,7 +7,7 @@
 #include "TimeStamp.h"
 
 
-inline namespace muduo {
+namespace muduo {
 
 class EventLoop;
 

@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-inline namespace muduo {
+namespace muduo {
 
 /**
  * @brief Buffer 类

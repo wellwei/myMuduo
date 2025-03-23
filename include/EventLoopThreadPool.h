@@ -10,7 +10,7 @@
 #include "ConsistenHash.h"
 #include "nocopyable.h"
 
-inline namespace muduo {
+namespace muduo {
 
 class EventLoopThreadPool : nocopyable {
 public:

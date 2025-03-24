@@ -4,14 +4,6 @@
 
 namespace muduo {
 
-TimeStamp::TimeStamp()
-    : microSecondsSinceEpoch_(0) {
-}
-
-TimeStamp::TimeStamp(int64_t microSecondsSinceEpoch)
-    : microSecondsSinceEpoch_(microSecondsSinceEpoch) {
-}
-
 TimeStamp TimeStamp::now() {
     struct timeval tv;
     gettimeofday(&tv, nullptr);     // 获取自1970年1月1日以来的微秒数

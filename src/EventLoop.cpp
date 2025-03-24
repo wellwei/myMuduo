@@ -8,6 +8,8 @@
 #include "Channel.h"
 #include "Poller.h"
 #include "Logger.h"
+#include "TimerQueue.h"
+#include "TimerId.h"
 
 namespace muduo {
 
@@ -32,7 +34,8 @@ EventLoop::EventLoop()
         threadId_(CurrentThread::tid()),
         poller_(Poller::newDefaultPoller(this)),
         wakeupFd_(createEventfd()),
-        wakeupChannel_(new Channel(this, wakeupFd_)) {
+        wakeupChannel_(new Channel(this, wakeupFd_)),
+        timerQueue_(new TimerQueue(this)) {
     
     LOG_DEBUG("EventLoop created %p in thread %d", this, threadId_);
     if (t_loopInThisThread) {
@@ -91,6 +94,10 @@ void EventLoop::wakeup() {
     if (n != sizeof(one)) {
         LOG_ERROR("EventLoop::wakeup() writes %ld bytes instead of 8", n);
     }
+}
+
+void EventLoop::abortNotInLoopThread() {
+    LOG_FATAL("EventLoop::abortNotInLoopThread - EventLoop %p was created in threadId_ = %d, current thread id = %d", this, threadId_, CurrentThread::tid());
 }
 
 /**
@@ -156,6 +163,25 @@ void EventLoop::doPendingFunctors() {
     }
 
     callingPendingFunctors_ = false;
+}
+
+// 定时器相关
+
+// 在 time 时间点执行 cb
+TimerId EventLoop::runAt(TimeStamp time, Functor cb) {
+    return timerQueue_->addTimer(std::move(cb), time, 0.0);
+}
+
+// 在 delay 时间后执行 cb（单位：秒）
+TimerId EventLoop::runAfter(double delay, Functor cb) {
+    TimeStamp time(addTime(TimeStamp::now(), delay));
+    return runAt(time, std::move(cb));
+}
+
+// 每隔 interval 时间执行 cb（单位：秒）
+TimerId EventLoop::runEvery(double interval, Functor cb) {
+    TimeStamp time(addTime(TimeStamp::now(), interval));
+    return timerQueue_->addTimer(std::move(cb), time, interval);
 }
 
 } // namespace muduo

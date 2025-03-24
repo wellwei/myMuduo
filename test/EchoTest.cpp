@@ -237,7 +237,10 @@ TEST(TcpServerTest, Latency) {
     char buffer[1024];
     for (int i = 0; i < numRequests; ++i) {
         auto start = high_resolution_clock::now();
-        ::write(sockfd, request.c_str(), request.size());
+        if (::write(sockfd, request.c_str(), request.size()) < 0) {
+            perror("write");
+            break;
+        }
         ssize_t n = ::read(sockfd, buffer, sizeof(buffer));
         auto end = high_resolution_clock::now();
 
@@ -262,7 +265,6 @@ TEST(TcpServerTest, Latency) {
 int main(int argc, char **argv) {
     muduo::AsyncLogger logger("echoserver", 1024 * 1024 * 128);
     muduo::Logger::setAsyncLogger(&logger);
-    muduo::Logger::setLogLevel(muduo::Logger::LogLevel::DEBUG);
     logger.start();
 
     ::testing::InitGoogleTest(&argc, argv);

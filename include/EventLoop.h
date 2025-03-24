@@ -9,12 +9,16 @@
 #include "TimeStamp.h"
 #include "nocopyable.h"
 #include "CurrentThread.h"
+#include "Callbacks.h"
+#include "TimerId.h"
+#include "Channel.h"
+#include "Poller.h"
+#include "TimerQueue.h"
 
 
 namespace muduo {
 
-class Channel;
-class Poller;
+class TimerQueue;
 
 class EventLoop : nocopyable {
 public:
@@ -37,10 +41,21 @@ public:
     void removeChannel(Channel* channel);   // 移除channel
     bool hasChannel(Channel* channel);      // 判断channel是否在EventLoop中
 
+    TimerId runAt(TimeStamp time, TimerCallback cb);    // 在指定时间执行cb
+    TimerId runAfter(double delay, TimerCallback cb);   // 在delay时间后执行cb
+    TimerId runEvery(double interval, TimerCallback cb);    // 每隔interval时间执行cb
+
     bool isInLoopThread() const { return threadId_ == CurrentThread::tid(); }
 
-private:
+    void assertInLoopThread() {
+        if (!isInLoopThread()) {
+            abortNotInLoopThread();
+        }
+    }
 
+private:
+    void abortNotInLoopThread();
+    
     void handleRead();  // wakeupChannel_的读回调
     void doPendingFunctors();   // 执行pendingFunctors_中的任务
 
@@ -54,6 +69,8 @@ private:
     TimeStamp pollReturnTime_;      // poll返回发生事件的时间点
     std::shared_ptr<Poller> poller_;    // IO复用器
     ChannelList activeChannels_;    // Poller返回的发生事件的Channel
+
+    std::unique_ptr<TimerQueue> timerQueue_;    // 定时器队列
 
     int wakeupFd_;
     std::shared_ptr<Channel> wakeupChannel_;

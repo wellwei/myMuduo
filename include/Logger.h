@@ -4,11 +4,10 @@
 #include <string.h>
 #include <memory>
 
+#include "LogStream.h"
+#include "AsyncLogger.h"
+
 namespace muduo {
-
-class LogStream;
-
-class AsyncLogger;
 
 class SourceFile {
 public:
@@ -39,10 +38,10 @@ public:
 class Logger {
 public:
     enum LogLevel {
+        DEBUG,
         INFO,
         ERROR,
-        FATAL,
-        DEBUG
+        FATAL
     };
 
     Logger(SourceFile file, int line, LogLevel level);

@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "AsyncLogger.h"
 #include "TimeStamp.h"
+#include "TimerQueue.h"
 
 using namespace muduo;
 
@@ -38,9 +39,9 @@ private:
 };
 
 int main() {
-    AsyncLogger logger("echoserver", 1024 * 1024 * 100, 10);
-    Logger::setAsyncLogger(&logger);
-    logger.start();
+    // AsyncLogger logger("echoserver", 1024 * 1024 * 100, 10);
+    // Logger::setAsyncLogger(&logger);
+    // logger.start();
 
     EventLoop loop;
     InetAddress listenAddr(8080);
@@ -48,6 +49,6 @@ int main() {
     server.start();
     loop.loop();
 
-    logger.stop();
+    // logger.stop();
     return 0;
 }

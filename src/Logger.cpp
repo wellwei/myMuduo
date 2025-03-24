@@ -1,17 +1,15 @@
 #include <memory>
 
 #include "Logger.h"
-#include "LogStream.h"
-#include "AsyncLogger.h"
 #include "TimeStamp.h"
 #include <stdarg.h>
 
 namespace muduo {
 
-#ifndef MUDEBUG
-Logger::LogLevel g_logLevel = Logger::LogLevel::INFO;
-#else
+#ifdef MUDEBUG
 Logger::LogLevel g_logLevel = Logger::LogLevel::DEBUG;
+#else
+Logger::LogLevel g_logLevel = Logger::LogLevel::INFO;
 #endif
 
 AsyncLogger* Logger::asyncLogger_ = nullptr;
@@ -46,6 +44,8 @@ Logger::~Logger() {
     const LogStream::Buffer& buf(stream_->buffer());
     if (asyncLogger_) {
         asyncLogger_->append(buf.data(), buf.length());
+    } else {    // 若没有设置异步日志，则直接输出到标准输出
+        fwrite(buf.data(), 1, buf.length(), stdout);
     }
 }
 

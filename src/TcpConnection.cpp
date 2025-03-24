@@ -16,7 +16,7 @@
 namespace muduo {
 static EventLoop *CheckLoopNotNull(EventLoop *loop) {
     if (loop == nullptr) {
-        LOG_FATAL("%s:%s:%d mainLoop is null.\n", __FILE__, __func__, __LINE__);
+        LOG_FATAL("%s:%s:%d mainLoop is null.", __FILE__, __func__, __LINE__);
     }
     return loop;
 }
@@ -36,7 +36,7 @@ TcpConnection::TcpConnection(EventLoop *loop,
       peerAddr_(peerAddr),
       highWaterMark_(64 * 1024 * 1024)
 {
-    LOG_DEBUG("TcpConnection::create [%s] at %p fd=%d\n", name_.c_str(), this, sockfd);
+    LOG_DEBUG("TcpConnection::create [%s] at %p fd=%d", name_.c_str(), this, sockfd);
     channel_->setReadCallback(std::bind(&TcpConnection::handleRead, this, std::placeholders::_1));
     channel_->setWriteCallback(std::bind(&TcpConnection::handleWrite, this));
     channel_->setCloseCallback(std::bind(&TcpConnection::handleClose, this));
@@ -45,7 +45,7 @@ TcpConnection::TcpConnection(EventLoop *loop,
 }
 
 TcpConnection::~TcpConnection() {
-    LOG_DEBUG("TcpConnection::destroy [%s] at %p fd=%d state=%d\n", name_.c_str(), this, channel_->fd(), (int)state_);
+    LOG_DEBUG("TcpConnection::destroy [%s] at %p fd=%d state=%d", name_.c_str(), this, channel_->fd(), (int)state_);
 }
 
 void TcpConnection::send(const std::string &buf) {
@@ -65,7 +65,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len) {
     size_t remaining = len;
     bool faultError = false;
     if (state_ == kDisconnected) {
-        LOG_ERROR("disconnected, give up writing\n");
+        LOG_ERROR("disconnected, give up writing");
         return;
     }
 
@@ -81,7 +81,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len) {
         } else {
             nwrote = 0;
             if (errno != EWOULDBLOCK) {     // EWOULDBLOCK表示非阻塞情况下，写缓冲区已满 == EAGAIN
-                LOG_ERROR("TcpConnection::sendInLoop\n");
+                LOG_ERROR("TcpConnection::sendInLoop");
                 if (errno == EPIPE || errno == ECONNRESET) {
                     faultError = true;
                 }
@@ -147,7 +147,7 @@ void TcpConnection::handleRead(TimeStamp receiveTime) {
         handleClose();
     } else {
         errno = savedErrno;
-        LOG_ERROR("TcpConnection::handleRead\n");
+        LOG_ERROR("TcpConnection::handleRead");
         handleError();
     }
 }
@@ -171,11 +171,11 @@ void TcpConnection::handleWrite() {
         } else {
             errno = savedErrno;
             if (errno != EAGAIN && errno != EWOULDBLOCK) {
-                LOG_ERROR("TcpConnection::handleWrite\n");
+                LOG_ERROR("TcpConnection::handleWrite");
             }
         }
     } else {
-        LOG_ERROR("Connection fd = %d is down, no more writing\n", channel_->fd());
+        LOG_ERROR("Connection fd = %d is down, no more writing", channel_->fd());
     }
 }
 
@@ -201,7 +201,7 @@ void TcpConnection::handleError() {
     } else {
         err = optval;
     }
-    LOG_ERROR("TcpConnection::handleError name:%s - SO_ERROR:%d\n", name_.c_str(), err);
+    LOG_ERROR("TcpConnection::handleError name:%s - SO_ERROR:%d", name_.c_str(), err);
 }
 
 // 零拷贝发送文件
@@ -213,7 +213,7 @@ void TcpConnection::sendFile(int fd, off_t offset, size_t count) {
             loop_->runInLoop(std::bind(&TcpConnection::sendFileInLoop, this, fd, offset, count));
         }
     } else {
-        LOG_ERROR("TcpConnection::sendFile - connection is not connected\n");
+        LOG_ERROR("TcpConnection::sendFile - connection is not connected");
     }
 }
 
@@ -225,7 +225,7 @@ void TcpConnection::sendFileInLoop(int fd, off_t offset, size_t count) {
 
     if (state_ == kDisconnecting) {
         // 如果是半关闭状态，不再发送数据
-        LOG_ERROR("disconnected, give up writing\n");
+        LOG_ERROR("disconnected, give up writing");
         return;
     }
 
@@ -239,7 +239,7 @@ void TcpConnection::sendFileInLoop(int fd, off_t offset, size_t count) {
             }
         } else {
             if (errno != EWOULDBLOCK) {
-                LOG_ERROR("TcpConnection::sendFileInLoop\n");
+                LOG_ERROR("TcpConnection::sendFileInLoop");
                 if (errno == EPIPE || errno == ECONNRESET) {
                     faultError = true;
                 }

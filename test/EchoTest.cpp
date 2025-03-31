@@ -263,13 +263,13 @@ TEST(TcpServerTest, Latency) {
 }
 
 int main(int argc, char **argv) {
-    muduo::AsyncLogger logger("echoserver", 1024 * 1024 * 128);
-    muduo::Logger::setAsyncLogger(&logger);
-    logger.start();
+    // muduo::AsyncLogger logger("echoserver", 1024 * 1024 * 128);
+    // muduo::Logger::setAsyncLogger(&logger);
+    // logger.start();
 
     ::testing::InitGoogleTest(&argc, argv);
     int ret = RUN_ALL_TESTS();
 
-    logger.stop();
+    // logger.stop();
     return ret;
 }

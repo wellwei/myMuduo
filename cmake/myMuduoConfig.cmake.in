@@ -2,11 +2,10 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/myMuduoTargets.cmake")
 
-# 设置myMuduo的别名，方便使用
-set_and_check(MYMUDUO_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@/myMuduo")
-set_and_check(MYMUDUO_LIB_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
+set_and_check(MYMUDUO_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include/myMuduo")
+set_and_check(MYMUDUO_LIB_DIR "${PACKAGE_PREFIX_DIR}/lib")
 
 # 导出myMuduo库目标
-set(MYMUDUO_LIBRARIES muduo::muduo)
+set(MYMUDUO_LIBRARIES myMuduo::myMuduo)
 
 check_required_components(myMuduo) 

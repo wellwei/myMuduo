@@ -33,7 +33,7 @@ install(TARGETS myMuduo
 
 install(EXPORT myMuduoTargets
         FILE myMuduoTargets.cmake
-        NAMESPACE muduo::
+        NAMESPACE myMuduo::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/myMuduo
 )
 

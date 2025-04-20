@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
+
+set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-linux)
+
 project(myMuduo VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)

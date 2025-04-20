@@ -8,10 +8,10 @@ enable_testing()
 file(GLOB TEST_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 # 链接Google Test
-find_package(GTest REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
 add_executable(tests ${TEST_SRC_FILES})
-target_link_libraries(tests GTest::GTest GTest::Main myMuduo)
+target_link_libraries(tests GTest::gtest GTest::gtest_main myMuduo)
 
 # 添加UNIT_TEST宏定义
 target_compile_definitions(tests PRIVATE UNIT_TEST)
